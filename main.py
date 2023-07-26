@@ -22,10 +22,11 @@ class Struct:
         if attributes is None:
             attributes = {}
 
+        self.schema = schema
         self.label = label
         self.attributes = attributes
         self.is_strings = is_strings
-        self.schema = schema
+
 
     def __repr__(self):
         res = f"({self.label}"
@@ -60,7 +61,7 @@ class Struct:
         return (self.label == other.label) and (self.attributes == other.attributes)
 
     @classmethod
-    def cast(cls, sc, x):
+    def create(cls, sc, x):
         if isinstance(x, Struct):
             return x
         if (isinstance(x, tuple) or isinstance(x, list)) \
@@ -68,7 +69,7 @@ class Struct:
                 and isinstance(x[1], dict):
             attrs = x[1]
             for k, v in attrs.items():
-                attrs[k] = Struct.cast(sc, v)
+                attrs[k] = Struct.create(sc, v)
             return Struct(sc, x[0], x[1])
         if isinstance(x, str):
             return Struct(sc, x)
@@ -91,7 +92,7 @@ class Encoder:
 
     def encode(self, struct):
         if not isinstance(struct, Struct):
-            struct = Struct.cast(self.schema, struct)
+            struct = Struct.create(self.schema, struct)
 
         v = self.token_emb[struct.label].copy()
         for k, val in struct.attributes.items():
@@ -108,7 +109,7 @@ class Encoder:
         # Decode label
         dots = (v.reshape(1, -1) * self.token_emb).sum(axis=1)
 
-        if dots.max() < 0.5:
+        if dots.max() < 0.75:
             return None
 
         label_ind = np.argmax(dots)

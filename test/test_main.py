@@ -1,8 +1,6 @@
-# test_main.py
-
 import unittest
 import numpy as np
-from main import Schema, Encoder, Struct
+from embedding.main import Schema, Encoder, Struct
 
 
 class TestMain(unittest.TestCase):

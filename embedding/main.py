@@ -27,7 +27,6 @@ class Struct:
         self.attributes = attributes
         self.is_strings = is_strings
 
-
     def __repr__(self):
         res = f"({self.label}"
         if isinstance(self.attributes, dict):
@@ -93,6 +92,9 @@ class Encoder:
     def encode(self, struct):
         if not isinstance(struct, Struct):
             struct = Struct.create(self.schema, struct)
+
+        if struct.is_strings:
+            struct = struct.to_indexes()
 
         v = self.token_emb[struct.label].copy()
         for k, val in struct.attributes.items():

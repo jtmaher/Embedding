@@ -38,6 +38,8 @@ class Struct:
         pass
 
     def __eq__(self, other):
+        if self.label is None:
+            return False
         return (self.label == other.label) and (self.attributes == other.attributes)
 
     @classmethod

@@ -1,5 +1,5 @@
-from embedding.array import ArrayEncoder
 import numpy as np
+from embedding.array import ArrayEncoder
 
 labs = [str(n) for n in range(5)]
 
@@ -24,7 +24,6 @@ def sweep():
             success = np.all(a == b)
             if not success:
                 print(dim, length, success)
-
                 break
 
 
@@ -46,4 +45,4 @@ def stress(dim=500, length=10, n=100):
         print(good, bad, good / (good + bad))
 
 
-stress(128, 6, 1000)
+stress(1028, 6, 1000)

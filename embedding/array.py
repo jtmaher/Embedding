@@ -4,7 +4,7 @@ from embedding.schema import Schema
 
 
 class ArrayEncoder:
-    def __init__(self, labels, dim=128, seed=42):
+    def __init__(self, labels, dim=128, seed=42, multiplicity=2):
         self.schema = Schema(labels=labels, attributes=['next'])
         self.encoder = Encoder(schema=self.schema, dim=dim, seed=seed)
 

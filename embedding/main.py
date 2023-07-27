@@ -111,7 +111,7 @@ class Encoder:
         # Decode label
         dots = (v.reshape(1, -1) * self.token_emb).sum(axis=1)
 
-        if dots.max() < 0.75:
+        if dots.max() < 0.6:
             return None
 
         label_ind = np.argmax(dots)

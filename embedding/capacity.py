@@ -1,7 +1,7 @@
 from embedding.array import ArrayEncoder
 import numpy as np
 
-labs = [str(n) for n in range(100)]
+labs = [str(n) for n in range(5)]
 
 
 def make_array(length):
@@ -46,4 +46,4 @@ def stress(dim=500, length=10, n=100):
         print(good, bad, good / (good + bad))
 
 
-stress(1250, 20, 1000)
+stress(128, 6, 1000)

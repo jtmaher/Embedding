@@ -1,4 +1,6 @@
-from embedding.main import Schema, Encoder, Struct
+from embedding.main import Encoder
+from embedding.struct import Struct
+from embedding.schema import Schema
 
 
 class ArrayEncoder:

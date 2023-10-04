@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from embedding.encoder import Encoder
-from embedding.struct import Struct
+from embedding.structure import Struct
 from embedding.schema import Schema
 
 
@@ -34,6 +34,30 @@ class TestMain(unittest.TestCase):
         s = s.to_indexes()
         v = en.encode(s)
         self.assertAlmostEqual(np.linalg.norm(v), 2, places=0)
+
+        d = en.decode(v)
+        self.assertEqual(d, s)
+
+    def test_encoder2(self):
+        sc = Schema(labels=['a', 'b', 'c', 'd'], attributes=['x', 'y', 'z'])
+        en = Encoder(schema=sc, dim=128, seed=42)
+
+        s = Struct.create(sc, ('a', {'x': 'b', 'y': ('a', {'x': 'c'}), 'z': ('a', {'x': 'c'})}))
+        s = s.to_indexes()
+        v = en.encode(s)
+        self.assertAlmostEqual(np.linalg.norm(v), np.sqrt(5), places=0)
+
+        d = en.decode(v)
+        self.assertEqual(d, s)
+
+    def test_encoder3(self):
+        sc = Schema(labels=['a', 'b', 'c', 'd'], attributes=['x', 'y', 'z'])
+        en = Encoder(schema=sc, dim=256, seed=42)
+
+        s = Struct.create(sc, ('a', {'x': 'b', 'y': ('a', {'x': ('a', {'x': 'c'})}), 'z': ('a', {'x': 'c'})}))
+        s = s.to_indexes()
+        v = en.encode(s)
+        self.assertAlmostEqual(np.linalg.norm(v), np.sqrt(6), places=0)
 
         d = en.decode(v)
         self.assertEqual(d, s)

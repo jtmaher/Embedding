@@ -1,16 +1,15 @@
 import numpy as np
 from scipy.stats import ortho_group
 
-from embedding.struct import Struct
+from embedding.structure import Struct
 
 
 class Encoder:
-    def __init__(self, schema, dim, seed=123, multiplicity=2):
+    def __init__(self, schema, dim, seed=123):
         self.schema = schema
         self.dim = dim
         np.random.seed(seed)
-        self.multiplicity = multiplicity
-        self.token_emb = np.random.normal(size=(len(schema.labels)*self.multiplicity, dim))
+        self.token_emb = np.random.normal(size=(len(schema.labels), dim))
         # self.token_emb = np.random.choice([-np.sqrt(dim), np.sqrt(dim)], size=(len(schema.labels), dim), replace=True)
         self.token_emb /= np.linalg.norm(self.token_emb, axis=1, keepdims=True)
 
@@ -18,49 +17,46 @@ class Encoder:
         for i in range(len(schema.attributes)):
             self.attr_emb[i] = ortho_group.rvs(dim)
 
-    def encode(self, struct, depth=0, select=None, it=0):
-        if it > 250:
-            raise('Encode failed')
+    def encode(self, struct, depth=0, it=0):
+        if it > 2:
+            raise 'Encode failed'
 
         if not isinstance(struct, Struct):
             struct = Struct.create(self.schema, struct)
 
-        if select is None:
-            np.random.seed()
-            select = np.random.choice(range(self.multiplicity), size=len(self.schema.labels), replace=True)
-
         if struct.is_strings:
             struct = struct.to_indexes()
 
-        v = self.token_emb[self.multiplicity*struct.label + select[struct.label]].copy()
+        v = np.zeros(self.dim)
         for k, val in struct.attributes.items():
-            v += self.attr_emb[k] @ self.encode(val, depth=depth + 1, select=select, it=it)
+            v += self.attr_emb[k] @ self.encode(val, depth=depth + 1, it=it)
 
-        if depth == 0:
-            try:
-                dec = self.decode(v)
-            except Exception as e:
-                return self.encode(struct, it=it + 1)
-            if dec is None or dec != struct:
-                return self.encode(struct, it=it + 1)
+        v += self.token_emb[struct.label]
 
-            print(f' {it}')
+        #if depth == 0:
+        #    try:
+        #        dec = self.decode(v)
+        #    except ValueError as e:
+        #        return self.encode(struct, it=it + 1)
+        #    if dec is None or dec != struct:
+        #        return self.encode(struct, it=it + 1)
+
         return v
 
     def decode(self, v, depth=0, max_depth=100):
         if depth > max_depth:
-            raise Exception('Decode failed')
+            raise ValueError('Decode failed')
 
         if len(v) != self.dim:
-            raise Exception('Vector has wrong shape.')
+            raise ValueError('Vector has wrong shape.')
 
         # Decode label
         dots = (v.reshape(1, -1) * self.token_emb).sum(axis=1)
 
-        if dots.max() < 0.65:
+        if dots.max() < 0.5:
             return None
 
-        label_ind = np.argmax(dots) // self.multiplicity
+        label_ind = np.argmax(dots)
         attrs = dict()
 
         for a in range(len(self.schema.attributes)):

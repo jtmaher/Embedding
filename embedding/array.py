@@ -1,10 +1,10 @@
 from embedding.encoder import Encoder
-from embedding.struct import Struct
+from embedding.structure import Struct
 from embedding.schema import Schema
 
 
 class ArrayEncoder:
-    def __init__(self, labels, dim=128, seed=42, multiplicity=2):
+    def __init__(self, labels, dim=128, seed=42):
         self.schema = Schema(labels=labels, attributes=['next'])
         self.encoder = Encoder(schema=self.schema, dim=dim, seed=seed)
 

@@ -7,11 +7,11 @@ from embedding.structure import Struct
 
 
 class TestParser(unittest.TestCase):
-    def check_parse(self, seq, exp):
+    def check_parse(self, seq, exp, dim):
         sc = Schema(labels=['L', 'R', 'E'],
                     attributes=['next', 'arg1', 'arg2', 'arg3'])
 
-        en = Encoder(schema=sc, dim=512, seed=42)
+        en = Encoder(schema=sc, dim=dim, seed=42)
 
         def enc(a):
             return en.encode(array_to_tree(a))
@@ -41,17 +41,17 @@ class TestParser(unittest.TestCase):
         exp = Struct.create(sc, exp)
         tr = en.decode(y[0]).to_strings()
 
-        self.assertEqual(exp, tr)  # add assertion here
+        self.assertEqual(exp, tr)
 
     def test_parse1(self):
         seq = ['L', 'L', 'R', 'R']
         exp = ("E", {"arg1": "L", "arg2": ("E", {"arg1": "L", "arg2": "R", }), "arg3": "R", })
-        self.check_parse(seq, exp)
+        self.check_parse(seq, exp, dim=128)
 
     def test_parse2(self):
         seq = ['L', 'R', 'L', 'R']
         exp = ("E", {"arg1": ("E", {"arg1": "L", "arg2": "R", }), "arg2": ("E", {"arg1": "L", "arg2": "R", }), })
-        self.check_parse(seq, exp)
+        self.check_parse(seq, exp, dim=256)
 
     def test_parse3(self):
         seq = ['L', 'R', 'L', 'R', 'L', 'R']
@@ -63,7 +63,7 @@ class TestParser(unittest.TestCase):
                     "arg1": "L", "arg2": "R", }), }),
             "arg2": ("E", {
                 "arg1": "L", "arg2": "R", }), })
-        self.check_parse(seq, exp)
+        self.check_parse(seq, exp, dim=512)
 
 
 if __name__ == '__main__':

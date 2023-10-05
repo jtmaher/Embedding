@@ -17,7 +17,7 @@ class Encoder:
         for i in range(len(schema.attributes)):
             self.attr_emb[i] = ortho_group.rvs(dim)
 
-    def encode(self, struct, depth=0, it=0):
+    def encode(self, struct, depth=0, it=0, check=False):
         if it > 2:
             raise 'Encode failed'
 
@@ -33,17 +33,23 @@ class Encoder:
 
         v += self.token_emb[struct.label]
 
-        #if depth == 0:
-        #    try:
-        #        dec = self.decode(v)
-        #    except ValueError as e:
-        #        return self.encode(struct, it=it + 1)
-        #    if dec is None or dec != struct:
-        #        return self.encode(struct, it=it + 1)
+        if depth == 0 and check:
+            try:
+                dec = self.decode(v)
+            except ValueError:
+                return self.encode(struct, it=it + 1)
+            if dec is None or dec != struct:
+                return self.encode(struct, it=it + 1)
 
         return v
 
     def decode(self, v, depth=0, max_depth=100):
+        try:
+            return self.decode_impl(v, depth, max_depth)
+        except ValueError:
+            return None
+
+    def decode_impl(self, v, depth, max_depth):
         if depth > max_depth:
             raise ValueError('Decode failed')
 

@@ -14,7 +14,11 @@ class ArrayEncoder:
         return self.encoder.encode(st)
 
     def decode(self, vector):
-        st = self.encoder.decode(vector).to_strings()
+        st = self.encoder.decode(vector)
+        if st is None:
+            return None
+
+        st = st.to_strings()
 
         s = [st.label]
         while 'next' in st.attributes:

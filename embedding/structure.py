@@ -9,11 +9,15 @@ class Struct:
         self.is_strings = is_strings
 
     def __repr__(self):
-        res = f"({self.label}"
-        if isinstance(self.attributes, dict):
+        if isinstance(self.attributes, dict) and not self.attributes == {}:
+            res = f'("{self.label}",'
+            res += " {"
             for k, v in self.attributes.items():
-                res += f" {k}: {str(v)}"
-        res += ")"
+                res += f' "{k}": {str(v)},'
+            res += "} "
+            res += ")"
+        else:
+            res = f'"{self.label}"'
         return res
 
     def to_indexes(self):

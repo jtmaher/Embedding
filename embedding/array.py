@@ -9,13 +9,7 @@ class ArrayEncoder:
         self.encoder = Encoder(schema=self.schema, dim=dim, seed=seed)
 
     def encode(self, array):
-        st = None
-        for a in array[::-1]:
-            if st is not None:
-                st = (a, {'next': st})
-            else:
-                st = a
-
+        st = array_to_tree(array)
         st = Struct.create(self.schema, st)
         return self.encoder.encode(st)
 
@@ -28,3 +22,14 @@ class ArrayEncoder:
             s.append(st.label)
 
         return s
+
+
+def array_to_tree(array):
+    st = None
+    for a in array[::-1]:
+        if st is not None:
+            st = (a, {'next': st})
+        else:
+            st = a
+
+    return st

@@ -67,7 +67,7 @@ class Encoder:
 
         for a in range(len(self.schema.attributes)):
             A = self.attr_emb[a]
-            x = self.decode(A.T @ v, depth + 1)
+            x = self.decode(A.T @ v, depth + 1, max_depth)
             if x is not None:
                 attrs[a] = x
 

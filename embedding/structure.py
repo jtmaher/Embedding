@@ -48,6 +48,8 @@ class Struct:
 
     @classmethod
     def create(cls, sc, x):
+        import copy
+        x = copy.deepcopy(x)
         if isinstance(x, Struct):
             return x
         if (isinstance(x, tuple) or isinstance(x, list)) \

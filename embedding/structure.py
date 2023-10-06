@@ -20,6 +20,13 @@ class Struct:
             res = f'"{self.label}"'
         return res
 
+    def to_array(self):
+        if len(self.attributes) == 0:
+            return self.label
+        else:
+            return (self.label,
+                    dict((k, v.to_array()) for k, v in self.attributes.items()))
+
     def to_indexes(self):
         if not self.is_strings:
             return self

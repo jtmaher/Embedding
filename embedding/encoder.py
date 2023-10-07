@@ -10,17 +10,13 @@ class Encoder:
         self.dim = dim
         np.random.seed(seed)
         self.token_emb = np.random.normal(size=(len(schema.labels), dim))
-        # self.token_emb = np.random.choice([-np.sqrt(dim), np.sqrt(dim)], size=(len(schema.labels), dim), replace=True)
         self.token_emb /= np.linalg.norm(self.token_emb, axis=1, keepdims=True)
 
         self.attr_emb = np.zeros((len(schema.attributes), dim, dim))
         for i in range(len(schema.attributes)):
             self.attr_emb[i] = ortho_group.rvs(dim)
 
-    def encode(self, struct, depth=0, it=0, check=False):
-        if it > 2:
-            raise 'Encode failed'
-
+    def encode(self, struct, depth=0):
         if not isinstance(struct, Struct):
             struct = Struct.create(self.schema, struct)
 
@@ -29,17 +25,9 @@ class Encoder:
 
         v = np.zeros(self.dim)
         for k, val in struct.attributes.items():
-            v += self.attr_emb[k] @ self.encode(val, depth=depth + 1, it=it)
+            v += self.attr_emb[k] @ self.encode(val, depth=depth + 1)
 
         v += self.token_emb[struct.label]
-
-        if depth == 0 and check:
-            try:
-                dec = self.decode(v)
-            except ValueError:
-                return self.encode(struct, it=it + 1)
-            if dec is None or dec != struct:
-                return self.encode(struct, it=it + 1)
 
         return v
 
@@ -67,7 +55,7 @@ class Encoder:
 
         for a in range(len(self.schema.attributes)):
             A = self.attr_emb[a]
-            x = self.decode(A.T @ v, depth + 1, max_depth)
+            x = self.decode_impl(A.T @ v, depth + 1, max_depth)
             if x is not None:
                 attrs[a] = x
 

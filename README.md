@@ -2,9 +2,13 @@ Banach-Tarski Embeddings
 ------------------------
 
 This repo contains an implementation of Banach-Tarski embeddings,
-which allow us to map recursive data structures to large vectors.
-If the embedding dimension is high enough, we can decode vectors
-back to the original data structure.
+which allow us to map recursive data structures into large vectors.
+If the embedding dimension is high enough, we can efficiently 
+decode vectors back to the original data structure.  
 
-[Read the paper.](paper.pdf)
+These vectors can be used to compute on the underlying data structures,
+in some cases without decoding.  BT embedding vectors are convenient building
+blocks for explicit transformer models that compute on recursive data
+structures.
 
+For more info: [Read the paper.](paper.pdf)

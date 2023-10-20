@@ -31,9 +31,12 @@ class Encoder:
 
         return v
 
-    def decode(self, v, depth=0, max_depth=100):
+    def decode(self, v, depth=0, max_depth=100, to_strings=False):
         try:
-            return self.decode_impl(v, depth, max_depth)
+            if to_strings:
+                return self.decode_impl(v, depth, max_depth).to_strings()
+            else:
+                return self.decode_impl(v, depth, max_depth)
         except ValueError:
             return None
 

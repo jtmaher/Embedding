@@ -108,8 +108,9 @@ def hierarchy_pos(G, root=None, width=1., vert_gap=0.2, vert_loc=0, leaf_vs_root
         leafcount = len([node for node in nx.descendants(G, root) if G.out_degree(node) == 0])
     elif isinstance(G, nx.Graph):
         leafcount = len([node for node in nx.node_connected_component(G, root) if G.degree(node) == 1 and node != root])
+
     rootpos, leafpos, leaf_count = _hierarchy_pos(G, root, 0, width,
-                                                  leafdx=width * 1. / leafcount,
+                                                  leafdx=width * 1. / leafcount if leafcount > 0 else 1,
                                                   vert_gap=vert_gap,
                                                   vert_loc=vert_loc,
                                                   xcenter=xcenter)

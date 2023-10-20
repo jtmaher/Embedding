@@ -22,11 +22,12 @@ def struct_to_graph(s):
 
 
 def draw_struct(s):
+    opts = dict(node_size=1000, node_color='lightblue', font_size=10)
     G = struct_to_graph(s)
     pos = hierarchy_pos(G)
-    nx.draw(G, pos, with_labels=False, node_size=1500, node_color='lightblue', font_size=15)
+    nx.draw(G, pos, with_labels=False, **opts)
     labels = nx.get_node_attributes(G, 'label')
     nx.draw_networkx_labels(G, pos, labels=labels)
 
     edge_labels = nx.get_edge_attributes(G, 'label')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=15)
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10)

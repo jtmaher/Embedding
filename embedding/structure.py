@@ -45,9 +45,6 @@ class Struct:
         res_attr = dict((self.schema.ind_to_attr[k], v.to_strings()) for k, v in self.attributes.items())
         return Struct(self.schema, res_lab, res_attr, is_strings=True)
 
-    def to_graph(self):
-        pass
-
     def __eq__(self, other):
         if self.label is None:
             return False
@@ -64,9 +61,15 @@ class Struct:
                 and isinstance(x[1], dict):
             attrs = x[1]
             for k, v in attrs.items():
+                if k not in sc.attr_to_ind:
+                    raise Exception(f'Attribute {k} not in schema.')
+
                 attrs[k] = Struct.create(sc, v)
             return Struct(sc, x[0], x[1])
         if isinstance(x, str):
-            return Struct(sc, x)
+            if x in sc.token_to_ind:
+                return Struct(sc, x)
+            else:
+                raise Exception(f'Label {x} not in schema.')
 
         raise Exception('This is not a struct.')

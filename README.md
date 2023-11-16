@@ -11,4 +11,4 @@ in some cases without decoding.  BT embedding vectors are convenient building
 blocks for explicit transformer models that compute on recursive data
 structures.
 
-For more info: [Read the paper.](paper.pdf)
+For more info: [Read the paper](paper.pdf) or [check out the demo](Demo.ipynb).
